@@ -1,5 +1,30 @@
+20250709
+
+优化TTY输入方案：Kbd -> KbdBridge -> Distrib Crt TTY (+ Use its parser(scan->filtered_show) get getc)  -> Wait for Focus App Getc()
+- 切换 APP 时暂时保留内容
+
+OSD 「在裸机C++中，在纯虚函数的子类实现中使用 可变参数 会产生错误。」
+
+20250708
+
+设想TTY输入方案：Kbd (+ Global Parser) -> Interf-Buf -> Distrib Crt TTY -> Distrib Focus App (+ Use its parser get getc) -> Wait for App Getc()
+
+20250707
+- 废弃的想法
+	- mecocoa top banner(单独TTY,隐式光标支持)，同时实现完整的键盘解析
+- Commit
+- Progress
+	- TTY0~3 & 激活 【暂未实现绑定】
+		- ESC返回动态内核(含banner任务), KernelTTY=TTY0
+		- F1 subappa, TTY1
+		- F2 subappb, TTY2
+		- F3 TTY3 
+		
+
 20250706 SYSCALL 返回值、标识当前进程
 - ISSUE Each time subapp (Ring3) print %d or other integer by outsfmt() will panic, but OutInteger() or Kernel Ring0 is OK.
+- 开始看王道的计算机操作系统考研课（理论派的）
+- 操作系统专业课 由广大操作系统开发者、学习者、使用者总结的概念, 很多概念没有形成共识
 
 20250705 TTY0控制台显示初步(光标不一定非要在屏幕中)
 Issue

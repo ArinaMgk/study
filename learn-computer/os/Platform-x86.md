@@ -11,6 +11,11 @@
 - ↓ 向下滚屏
 
 
+## ISSUE
+
+- [ ] 20250706 ISSUE Each time subapp (Ring3) print %d or other integer by outsfmt() will panic, but OutInteger() or Kernel Ring0 is OK.
+- [ ] 「在裸机C++中，在纯虚函数的子类实现中使用 可变参数 会产生错误。」
+
 ## 模块
 
 按照流行处理器结构、参考主流操作系统进行设计。
