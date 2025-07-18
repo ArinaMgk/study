@@ -1,20 +1,36 @@
 
 # 程序
 
+已经实现的功能
+- 不太完善
+	- 分页、任务与调度、中断异常
+- 完善
+	- 分段
+
+
+
 - `prehost\atx-x86-flap32\atx-x86-flap32.loader.cpp`
 	- 用于加载静态例程和活动内核并转移控制权
 
 - `prehost\atx-x86-flap32\atx-x86-flap32.cpp`
 	- 静态例程和活动内核，包含以下模块
 
-- ↑ 向上滚屏
-- ↓ 向下滚屏
+- `↑` 向上滚屏
+- `↓` 向下滚屏
+- `ESC` TTY0
+- `F1` TTY1
+- `F2` TTY2
+- `F3` TTY3
 
 
 ## ISSUE
 
 - [ ] 20250706 ISSUE Each time subapp (Ring3) print %d or other integer by outsfmt() will panic, but OutInteger() or Kernel Ring0 is OK.
 - [ ] 「在裸机C++中，在纯虚函数的子类实现中使用 可变参数 会产生错误。」
+
+### Phenomenon
+
+- 异步：相同时间片调度，应用响应不均匀
 
 ## 模块
 
