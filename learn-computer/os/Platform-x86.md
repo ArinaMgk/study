@@ -26,6 +26,7 @@
 ## ISSUE
 
 - [ ] 20250706 ISSUE Each time subapp (Ring3) print %d or other integer by outsfmt() will panic, but OutInteger() or Kernel Ring0 is OK.
+	- [ ] 考虑退化 func(class&, para0, ...)
 - [ ] 「在裸机C++中，在纯虚函数的子类实现中使用 可变参数 会产生错误。」
 
 ### Phenomenon
