@@ -1,6 +1,53 @@
 # メココア
 
 
+20251010
+- 状态
+	- x86: filesys
+	- x64: UEFI
+	- r32: MEM
+	- arm: ...
+
+20250915
+- ア：用户程序申请空间大小为页的倍数，由 Taskman 委托，页内再由 Taskman 进行管理，这样使用位图就能表示分配情况了。使用这种方法的原因是最大程度利用页面的特性。
+
+**20250812**
+TODO
+- 四个盘
+- Disk自定义函数-RW (OK)
+- 动态加载子程序
+- Harddisk_PATA_Paged for fileman and filesys (OK)
+
+**20250811**
+
+每类硬件驱动(服务)独占一个Task的好处：可以利用同步通信机制。
+
+**20250805**
+- [x] RTC的触发 Unblock
+
+>是否要为 R1-Server 建立系统调用，例如切换中断服务的，暂时搁置。等研究Linux和Windows的驱动开发后再说。
+
+**20250731**
+
+发送消息
+- if (dest.state == block)
+	- Send to dest
+	- Unblock for this reason
+- else
+	- Append to dest.mail_queue
+	- block this process
+
+接收消息
+- if (dest.mail_queue)
+- else
+	- block this
+
+B: 在 1s 时接收一次
+C: 在 2s 时发送一次
+C: 在 3s 时发送一次
+B: 在 4s 时接收一次并检验两次
+
+
 20250728
 - 解决昨天的卡住
 - 异常的切换
