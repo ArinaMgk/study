@@ -794,6 +794,77 @@ enum class FiledevMsg {
 
 ---
 
+是的，Mecocoa 的 VFS 根节点正是挂载在 **`rootfs`** 上的。在 `mecocoa/filesys.cpp` 的 `Filesys::Initialize()` 中可以看到这个过程。
+
+# 20260521
+
+```
+现在我要实现syscall的 D:\her\mecocoa\include\syscall.hpp 中的 proper(0xB)&enumer(0xC)，用于获取文件/目录属性信息和获取目录中有哪些文件。
+现在你不需要指定实施方案，也不要修改代码，只需要评估应该怎么实现这两项功能，以及有没有更好的实现
+---
+enumer(fd, buf, max_count) ：如果一个目录的文件数量大于 max_count，就不能获取后面的文件了，有什么办法能从上次获取的进度继续获取？例如使用 {start_index, this_count} ？
+```
+
+**使用 VFS 现有的 `f_pos`（隐式状态偏移量）- ★ 强烈推荐**
+
+这是类 Unix/POSIX 标准（如 `readdir`）最经典的实现方式。利用打开目录的 `vfs_file` 结构体中的 `f_pos` 字段来隐式记录当前的枚举位置（在目录中代表第几个文件）。
+
+- **系统调用定义**（刚好 3 个参数）：
+    
+    cpp
+    
+    stdsint sysc_ENUMER(stduint fd, stduint usr_buf, stduint max_count);
+    
+- **内核实现细节**：
+    1. 内核获取 `vfs_file`，将 `file->f_pos` 作为起始的 `start_index`。
+    2. 回调函数在列举时，先跳过前 `file->f_pos` 个文件，然后拷贝后续的文件到用户态，拷贝上限为 `max_count`。
+    3. 拷贝完成后，更新 `file->f_pos += 实际拷贝的条目数`。
+- **用户态使用非常简单**：
+    
+
+```c
+    int fd = open("/md0/bin", O_RDONLY);
+    struct dirent_t buf[10];
+    int count;
+    // 循环读取，直到 enumer 返回 0（说明读完了）
+    while ((count = enumer(fd, buf, 10)) > 0) {
+        for (int i = 0; i < count; i++) {
+            printf("File: %s\n", buf[i].name);
+        }
+    }
+    
+    close(fd);
+```
+    
+- **重置进度**： 若用户想从头重新读取，只需调用现有的 `seek(fd, 0, SEEK_SET)`，内核在 `Seek` 处理中将 `file->f_pos` 归零即可。
+- **优点**：
+    - 符合 Mecocoa 的 3 参数系统调用限制。
+    - 符合 POSIX 标准，对用户程序极为友好。
+
+---
+
+```
+现在可以正常运行，但是无法正常工作：
+
+输入 md0/ls 
+输出 cannot access '.': No such file ...
+（上级目录 .. 也有这个问题，注意根目录的 .. 指向自己）
+
+输入 md0/ls / 
+什么不显示
+输入 md0/ls md0
+什么不显示
+输入不存在的文件夹 可以正常显示  cannot access...
+
+先不要修改代码，先寻找原因
+```
+
+|问题|根本原因|
+|---|---|
+|`ls .`（或 `..`）报 cannot access|`_Index_unlocked` 未处理 `.` / `..` 特殊路径组件|
+|`ls /` 无输出|`RootFs::enumer` 硬编码返回 `false`，不遍历 VFS 子节点|
+|`ls md0` 无输出|`MountFilesys` 创建 mounted root inode 时，`internal_handler` 未被赋值（`nullptr`），FAT 的 `enumer` 因此无法访问目录句柄|
+
 
 
 
