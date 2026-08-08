@@ -138,3 +138,26 @@ bool FloppyDisk::IsMediaPresent() {
     
 4. **第四步**：当用户尝试挂载 `A:` 盘或读取数据时，调用 `IsMediaPresent()`。若返回 `false`，向用户报错误码：`No Media Present`（请插入软盘）。
 
+# 20260618
+
+给 hd_int_wait() 增加超时机制，超时后回退到轮询模式（ ReactType::Loop ），轮询5次之后就返回错误(只在本次有效)。应用给磁盘和软盘
+
+# 20260716
+
+```
+在我的操作系统中 x86/64 目前
+
+| `pci@0000:00:07.0` | `8086` (Intel)    | `7110`     | **Intel 82371AB PIIX4 ISA 桥**             |
+| `pci@0000:00:01.0` | `8086` (Intel) | `7000`     | **Intel 82371SB PIIX3 ISA 桥**             |
+
+
+这两种桥还没有实现、识别。所以在设备树中只是匿名设备。我想实现，展开其中的 isa 设备，请看看要怎么做
+
+注意，目前软盘好像已经在使用 ISA DMA 了
+
+我已经预先留出了对应的代码文件
+D:\her\unisym\inc\cpp\Device\Bus\ISA.hpp
+D:\her\unisym\lib\cpp\Device\Bus\ISA.cpp
+```
+
+

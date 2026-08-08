@@ -1,3 +1,22 @@
+
+
+
+
+# 20260714
+
+```
+在 x86 no GUI 模式下，默认有4个屏幕，即 Bcons[TTY_NUMBER]
+初始状态，只有 Bcons 0 启动并绑定了 cot 程序。
+我现在想：
+1、Bcons 0 的 cot 退出时，自动重新启动一份 cot
+2、【Lazy Create】使用 F2 F3 F4 能切换到 Bcons 1 2 3，在切换到 Bcons i 的时候，如果 Bcons i 没有绑定 cot，就启动一份 cot 并绑定上
+3、定义了 ProcessBlock* Bcons_pcot[TTY_NUMBER] = {};，辅助实现以上功能
+---
+不要改动 Taskman::Exit，统一再按下 F1~4的时候判断吧
+---
+
+```
+
 # 20260430
 
 ```
